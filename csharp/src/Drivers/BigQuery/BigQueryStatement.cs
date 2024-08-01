@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
@@ -54,8 +55,21 @@ namespace Apache.Arrow.Adbc.Drivers.BigQuery
         public override QueryResult ExecuteQuery()
         {
             QueryOptions? queryOptions = ValidateOptions();
+/*            if (queryOptions == null) {
+                queryOptions = new QueryOptions();
+            }
+            queryOptions.AllowLargeResults=true;
+            queryOptions.DestinationTable = new TableReference()
+            {
+                ProjectId = "adfgatest",
+                DatasetId = "testlargeresult5",
+                TableId = "ttt"
+            };*/
             BigQueryJob job = this.client.CreateQueryJob(SqlQuery, null, queryOptions);
-            BigQueryResults results = job.GetQueryResults();
+
+            GetQueryResultsOptions getQueryResultsOptions = new GetQueryResultsOptions();
+/*            getQueryResultsOptions.Timeout= TimeSpan.FromHours(6);*/
+            BigQueryResults results = job.GetQueryResults(getQueryResultsOptions);
 
             BigQueryReadClientBuilder readClientBuilder = new BigQueryReadClientBuilder();
             readClientBuilder.Credential = this.credential;
